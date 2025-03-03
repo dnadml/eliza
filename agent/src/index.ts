@@ -1,4 +1,7 @@
 import { DirectClient } from "@elizaos/client-direct";
+import { TwitterClientInterface } from "@elizaos/client-twitter";
+
+
 import {
     type Adapter,
     AgentRuntime,
@@ -571,25 +574,37 @@ export function getTokenForProvider(
 }
 
 // also adds plugins from character file into the runtime
-export async function initializeClients(
-    character: Character,
-    runtime: IAgentRuntime
-) {
-    // each client can only register once
-    // and if we want two we can explicitly support it
+export async function initializeClients(character: Character, runtime: IAgentRuntime) {
+    // Each client can only register once
     const clients: ClientInstance[] = [];
-    // const clientTypes = clients.map((c) => c.name);
-    // elizaLogger.log("initializeClients", clientTypes, "for", character.name);
 
+    elizaLogger.log("initializeClients", character.clients, "for", character.name);
+
+    // 🔹 Twitter Client Initialization
+    if (character.clients?.includes("twitter")) {
+        try {
+            const twitterClient = await TwitterClientInterface.start(runtime);
+            if (twitterClient) {
+                clients.push(twitterClient);
+                elizaLogger.info("✅ Initialized Twitter client successfully.");
+            }
+        } catch (error) {
+            elizaLogger.error("❌ Failed to initialize Twitter client:", error);
+        }
+    }
+
+    // Load clients from plugins
     if (character.plugins?.length > 0) {
         for (const plugin of character.plugins) {
             if (plugin.clients) {
                 for (const client of plugin.clients) {
-                    const startedClient = await client.start(runtime);
-                    elizaLogger.debug(
-                        `Initializing client: ${client.name}`
-                    );
-                    clients.push(startedClient);
+                    try {
+                        const startedClient = await client.start(runtime);
+                        clients.push(startedClient);
+                        elizaLogger.info(`✅ Initialized client: ${client.name}`);
+                    } catch (error) {
+                        elizaLogger.error(`❌ Failed to initialize client ${client.name}:`, error);
+                    }
                 }
             }
         }
@@ -597,6 +612,7 @@ export async function initializeClients(
 
     return clients;
 }
+
 
 export async function createAgent(
     character: Character,

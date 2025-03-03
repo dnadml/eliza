@@ -12,6 +12,7 @@
     "license": "ISC",
     "description": "",
     "dependencies": {
+        "@elizaos/client-twitter": "0.25.6-alpha.1",
         "commander": "^13.1.0"
     }
 }

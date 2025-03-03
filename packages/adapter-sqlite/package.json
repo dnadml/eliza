@@ -19,6 +19,7 @@
         "dist"
     ],
     "dependencies": {
+        "@elizaos/client-twitter": "0.25.6-alpha.1",
         "@elizaos/core": "workspace:*",
         "@types/better-sqlite3": "7.6.12",
         "better-sqlite3": "11.8.1",
@@ -27,9 +28,9 @@
     },
     "devDependencies": {
         "@types/uuid": "10.0.0",
+        "@vitest/coverage-v8": "^3.0.2",
         "tsup": "8.3.5",
-        "vitest": "^3.0.2",
-        "@vitest/coverage-v8": "^3.0.2"
+        "vitest": "^3.0.2"
     },
     "scripts": {
         "build": "tsup --format esm --dts",
